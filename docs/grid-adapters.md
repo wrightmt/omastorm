@@ -390,7 +390,9 @@ centre:
    then highest `selection_priority`, then adapter id.
 4. A grid with a better product class or priority preempts the held grid
    as soon as both cover. Equal-ranked grids keep the held one so a
-   boundary does not flap.
+   boundary does not flap. Equal-ranked grids that are each drawn about
+   one radar (the BOM sources) choose the nearest radar and hand off
+   between radars by rule 1's ratio and margin.
 5. With no covering source, clear the active selection and show the map
    without radar.
 

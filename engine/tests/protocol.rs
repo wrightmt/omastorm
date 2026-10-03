@@ -146,7 +146,8 @@ fn fixture_transport_and_shared_commands() {
         assert!(ids.contains(id));
     }
     let sources = hello["sources"].as_array().unwrap();
-    assert_eq!(sources.len(), 3);
+    // NEXRAD, OPERA, one grid source per BOM radar, then the fixture.
+    assert!(sources.len() > 60);
     assert_eq!(sources[0]["id"], "nexrad");
     assert_eq!(sources[0]["family"], "polar");
     assert_eq!(sources[0]["kind"], "site");
@@ -156,11 +157,20 @@ fn fixture_transport_and_shared_commands() {
     assert_eq!(sources[1]["selectionPriority"], 10);
     assert_eq!(sources[1]["attribution"], "EUMETNET OPERA");
     assert_eq!(sources[1]["coverage"]["kind"], "box");
-    assert_eq!(sources[2]["id"], "fixture-mosaic");
-    assert_eq!(sources[2]["family"], "grid");
-    assert_eq!(sources[2]["kind"], "mosaic");
-    assert_eq!(sources[2]["selectionPriority"], 100);
-    assert_eq!(sources[2]["coverage"]["kind"], "box");
+    let sydney = sources.iter().find(|s| s["id"] == "IDR71").unwrap();
+    assert_eq!(sydney["family"], "grid");
+    assert_eq!(sydney["kind"], "mosaic");
+    assert_eq!(sydney["defaultProductClass"], "precipitationRate");
+    assert_eq!(sydney["attribution"], "Bureau of Meteorology");
+    assert_eq!(sydney["coverage"]["kind"], "circle");
+    assert_eq!(sydney["coverage"]["radiusKm"].as_f64(), Some(256.0));
+    assert!(sydney["coverage"]["lat"].as_f64().unwrap() < -33.0);
+    let fixture = sources.last().unwrap();
+    assert_eq!(fixture["id"], "fixture-mosaic");
+    assert_eq!(fixture["family"], "grid");
+    assert_eq!(fixture["kind"], "mosaic");
+    assert_eq!(fixture["selectionPriority"], 100);
+    assert_eq!(fixture["coverage"]["kind"], "box");
     let initial = read(&mut first);
     assert_eq!(initial["frame"]["scanTime"], "2013-05-20T20:16:43Z");
     assert_eq!(initial["mode"], "archived");

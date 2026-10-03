@@ -1,6 +1,7 @@
 //! Compiled source registry. Enum dispatch over every adapter this build
 //! compiled (`docs/grid-adapters.md`). A new live mosaic is a `GridRef`
 //! variant, a field on [`SourceRegistry`], and a box in `envelope.rs`.
+//! The BOM radars are many sources of one variant (`bom.rs`).
 
 use crate::{
     live,
@@ -84,6 +85,7 @@ pub enum MosaicStartError {
 pub struct SourceRegistry {
     pub nexrad: Nexrad,
     pub opera: crate::opera::Opera,
+    pub bom: Vec<crate::bom::BomRadar>,
     pub fixture: crate::grid_fixture::FixtureMosaic,
 }
 
@@ -92,16 +94,19 @@ impl SourceRegistry {
         Self {
             nexrad: Nexrad::new(),
             opera: crate::opera::Opera::new(),
+            bom: crate::bom::radars(),
             fixture: crate::grid_fixture::FixtureMosaic::new(),
         }
     }
 
-    pub fn adapters(&self) -> [AdapterRef<'_>; 3] {
-        [
+    pub fn adapters(&self) -> Vec<AdapterRef<'_>> {
+        let mut adapters = vec![
             AdapterRef::Nexrad(&self.nexrad),
             AdapterRef::Grid(GridRef::Opera(&self.opera)),
-            AdapterRef::Grid(GridRef::FixtureMosaic(&self.fixture)),
-        ]
+        ];
+        adapters.extend(self.bom.iter().map(|r| AdapterRef::Grid(GridRef::Bom(r))));
+        adapters.push(AdapterRef::Grid(GridRef::FixtureMosaic(&self.fixture)));
+        adapters
     }
 
     pub fn hello_sources(&self) -> Vec<SourceInfo> {
@@ -176,6 +181,7 @@ pub enum AdapterRef<'a> {
 /// a `SourceRegistry` field, and its box in `envelope.rs`.
 pub enum GridRef<'a> {
     Opera(&'a crate::opera::Opera),
+    Bom(&'a crate::bom::BomRadar),
     FixtureMosaic(&'a crate::grid_fixture::FixtureMosaic),
 }
 
@@ -212,9 +218,10 @@ impl<'a> AdapterRef<'a> {
 }
 
 impl<'a> GridRef<'a> {
-    fn id(&self) -> &str {
+    fn id(&self) -> &'a str {
         match self {
             Self::Opera(a) => a.id,
+            Self::Bom(a) => &a.id,
             Self::FixtureMosaic(a) => a.id,
         }
     }
@@ -222,6 +229,7 @@ impl<'a> GridRef<'a> {
     fn metadata(&self) -> SourceMetadataBorrowed<'a> {
         match self {
             Self::Opera(a) => a.metadata(),
+            Self::Bom(a) => a.metadata(),
             Self::FixtureMosaic(a) => a.metadata(),
         }
     }
@@ -238,13 +246,19 @@ impl<'a> GridRef<'a> {
             product: meta.default_product_class,
             priority: mosaic.selection_priority,
             coverage: mosaic.coverage.clone(),
-            dish: None,
+            dish: match self {
+                Self::Bom(a) => Some(a.location()),
+                Self::Opera(_) | Self::FixtureMosaic(_) => None,
+            },
         })
     }
 
     fn start(&self) -> MosaicStart {
         match self {
             Self::Opera(a) => MosaicStart::Live {
+                placeholder: a.loading_placeholder().map(Box::new),
+            },
+            Self::Bom(a) => MosaicStart::Live {
                 placeholder: a.loading_placeholder().map(Box::new),
             },
             Self::FixtureMosaic(a) => MosaicStart::Static { frames: a.frames() },
@@ -254,17 +268,19 @@ impl<'a> GridRef<'a> {
     fn history_max(&self) -> Option<usize> {
         match self {
             Self::Opera(_) => Some(crate::opera::HISTORY_MAX),
+            Self::Bom(_) => Some(crate::bom::HISTORY_MAX),
             Self::FixtureMosaic(_) => None,
         }
     }
 
     fn polls(&self) -> bool {
-        matches!(self, Self::Opera(_))
+        matches!(self, Self::Opera(_) | Self::Bom(_))
     }
 
     fn poll(&self, events: Sender<GridEvent>, known: HashSet<String>) -> Option<JoinHandle<()>> {
         match self {
             Self::Opera(a) => a.poll(&AdapterTarget::Mosaic, events, known),
+            Self::Bom(a) => a.poll(&AdapterTarget::Mosaic, events, known),
             Self::FixtureMosaic(_) => None,
         }
     }
@@ -367,7 +383,8 @@ impl Nexrad {
     }
 }
 
-/// One selectable coverage: a polar dish or a grid mosaic.
+/// One selectable coverage: a polar dish or a grid mosaic. A grid drawn
+/// about one radar names it as `dish` so equal-ranked grids pick by distance.
 #[derive(Clone, Debug)]
 pub struct Candidate {
     pub selection: Selection,
@@ -527,13 +544,27 @@ pub fn covering_selection(
         return None;
     }
 
-    // Highest product class, then highest priority, then adapter id (ascending).
-    let best = grids.iter().copied().min_by(|a, b| {
-        b.product
-            .cmp(&a.product)
-            .then(b.priority.cmp(&a.priority))
-            .then(a.selection.source_id.cmp(&b.selection.source_id))
-    })?;
+    // Highest product class, then highest priority.
+    let best = grids
+        .iter()
+        .copied()
+        .max_by(|a, b| a.product.cmp(&b.product).then(a.priority.cmp(&b.priority)))?;
+    // Among equals the nearest radar, then adapter id (ascending). A grid
+    // with no radar of its own has no distance and ranks by id alone.
+    let grid_distance = |c: &Candidate| {
+        c.dish
+            .map(|p| great_circle_km(center.lat, center.lon, p.lat, p.lon))
+            .unwrap_or(f64::INFINITY)
+    };
+    let nearest = grids
+        .iter()
+        .copied()
+        .filter(|c| c.product == best.product && c.priority == best.priority)
+        .min_by(|a, b| {
+            grid_distance(a)
+                .total_cmp(&grid_distance(b))
+                .then(a.selection.source_id.cmp(&b.selection.source_id))
+        })?;
 
     let held_grid = held.and_then(|h| {
         grids
@@ -542,12 +573,17 @@ pub fn covering_selection(
             .find(|c| same_selection(&c.selection, h))
     });
     if let Some(held_grid) = held_grid {
-        // 4. Equal-ranked grids keep the held one; better class or priority preempts.
+        // 4. Equal-ranked grids keep the held one, with the polar hand-off
+        // between radars; better class or priority preempts.
         if held_grid.product == best.product && held_grid.priority == best.priority {
-            return Some(held_grid.selection.clone());
+            let nearest_d = grid_distance(nearest);
+            let held_d = grid_distance(held_grid);
+            if nearest_d >= HANDOFF_RATIO * held_d || held_d - nearest_d < HANDOFF_MARGIN_KM {
+                return Some(held_grid.selection.clone());
+            }
         }
     }
-    Some(best.selection.clone())
+    Some(nearest.selection.clone())
 }
 
 #[cfg(test)]
@@ -812,6 +848,104 @@ mod tests {
             Some("alpha".into()),
             "no held: adapter id ascending"
         );
+    }
+
+    fn radar_grid(id: &str, lat: f64, lon: f64) -> Candidate {
+        Candidate {
+            dish: Some(GeoPoint { lat, lon }),
+            ..grid(
+                id,
+                ProductClass::PrecipitationRate,
+                20,
+                Coverage::Circle {
+                    lat: Some(lat),
+                    lon: Some(lon),
+                    radius_km: 256.0,
+                },
+            )
+        }
+    }
+
+    fn sel_grid(id: &str) -> Selection {
+        Selection {
+            source_id: id.into(),
+            target: AdapterTarget::Mosaic,
+        }
+    }
+
+    #[test]
+    fn equal_rank_radar_grids_pick_the_nearest_with_hand_off() {
+        // "zeta" sorts after "alpha" but is the nearer radar.
+        let far = radar_grid("alpha", -33.0, 150.0);
+        let near = radar_grid("zeta", -33.0, 152.0);
+        let radars = [far.clone(), near.clone()];
+        let (pf, pn) = (far.dish.unwrap(), near.dish.unwrap());
+        assert_eq!(
+            covering_selection(between(pf, pn, 0.9), None, &radars),
+            Some(sel_grid("zeta"))
+        );
+        // Between them the held radar stays, from either side.
+        for fraction in [0.45, 0.5, 0.55] {
+            let c = between(pf, pn, fraction);
+            for held in ["alpha", "zeta"] {
+                assert_eq!(
+                    covering_selection(c, Some(&sel_grid(held)), &radars),
+                    Some(sel_grid(held)),
+                    "{fraction} holding {held}"
+                );
+            }
+        }
+        // Clearly nearer the other radar hands off while both still cover.
+        let c = between(pf, pn, 0.7);
+        assert!(far.contains(c) && near.contains(c));
+        assert_eq!(
+            covering_selection(c, Some(&sel_grid("alpha")), &radars),
+            Some(sel_grid("zeta"))
+        );
+        // Outside the held radar's coverage the other takes over.
+        let east = GeoPoint {
+            lat: -33.0,
+            lon: 153.5,
+        };
+        assert!(!far.contains(east));
+        assert_eq!(
+            covering_selection(east, Some(&sel_grid("alpha")), &radars),
+            Some(sel_grid("zeta"))
+        );
+    }
+
+    #[test]
+    fn bom_radars_follow_the_centre_across_australia() {
+        let registry = SourceRegistry::compiled();
+        let pick = |lat: f64, lon: f64, held: Option<&Selection>| {
+            registry
+                .covering_selection(GeoPoint { lat, lon }, held)
+                .map(|s| s.source_id)
+        };
+        assert_eq!(pick(-33.87, 151.21, None).as_deref(), Some("IDR71"));
+        assert_eq!(pick(-32.93, 151.78, None).as_deref(), Some("IDR04"));
+        assert_eq!(pick(-37.81, 144.96, None).as_deref(), Some("IDR02"));
+        // Sydney, held on Newcastle: Terrey Hills is far nearer.
+        assert_eq!(
+            pick(-33.87, 151.21, Some(&sel_grid("IDR04"))).as_deref(),
+            Some("IDR71")
+        );
+        // The Great Australian Bight is beyond every radar.
+        assert_eq!(pick(-38.0, 130.0, None), None);
+        assert!(matches!(
+            registry.mosaic_start("IDR71"),
+            Ok(MosaicStart::Live { .. })
+        ));
+        assert!(registry.polls("IDR71"));
+        assert_eq!(registry.history_max("IDR71"), Some(crate::bom::HISTORY_MAX));
+        let info = registry
+            .hello_sources()
+            .into_iter()
+            .find(|s| s.id == "IDR71")
+            .unwrap();
+        assert_eq!(info.name, "Sydney (Terrey Hills)");
+        assert_eq!(info.attribution, "Bureau of Meteorology");
+        assert_eq!(info.family, Family::Grid);
     }
 
     #[test]

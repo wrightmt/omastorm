@@ -1,0 +1,459 @@
+{
+  "sites": [
+    {
+      "id": "IDR02",
+      "name": "Melbourne (Laverton)",
+      "state": "VIC",
+      "lat": -37.85525,
+      "lon": 144.75544
+    },
+    {
+      "id": "IDR03",
+      "name": "Wollongong (Appin)",
+      "state": "NSW",
+      "lat": -34.2625,
+      "lon": 150.8752
+    },
+    {
+      "id": "IDR04",
+      "name": "Newcastle",
+      "state": "NSW",
+      "lat": -32.73,
+      "lon": 152.025
+    },
+    {
+      "id": "IDR06",
+      "name": "Geraldton",
+      "state": "WA",
+      "lat": -28.8044,
+      "lon": 114.6972
+    },
+    {
+      "id": "IDR07",
+      "name": "Wyndham",
+      "state": "WA",
+      "lat": -15.453,
+      "lon": 128.119
+    },
+    {
+      "id": "IDR08",
+      "name": "Gympie (Mount Kanigan)",
+      "state": "QLD",
+      "lat": -25.9574,
+      "lon": 152.577
+    },
+    {
+      "id": "IDR106",
+      "name": "Townsville",
+      "state": "QLD",
+      "lat": -19.4195,
+      "lon": 146.5506
+    },
+    {
+      "id": "IDR107",
+      "name": "Richmond",
+      "state": "QLD",
+      "lat": -20.7518,
+      "lon": 143.1414
+    },
+    {
+      "id": "IDR108",
+      "name": "Toowoomba",
+      "state": "QLD",
+      "lat": -27.27401,
+      "lon": 151.99299
+    },
+    {
+      "id": "IDR111",
+      "name": "Karratha",
+      "state": "WA",
+      "lat": -20.99241,
+      "lon": 116.87579
+    },
+    {
+      "id": "IDR112",
+      "name": "Gove",
+      "state": "NT",
+      "lat": -12.2691,
+      "lon": 136.8204
+    },
+    {
+      "id": "IDR114",
+      "name": "Carnarvon",
+      "state": "WA",
+      "lat": -24.8883,
+      "lon": 113.66938
+    },
+    {
+      "id": "IDR14",
+      "name": "Mount Gambier",
+      "state": "SA",
+      "lat": -37.7477,
+      "lon": 140.7746
+    },
+    {
+      "id": "IDR15",
+      "name": "Dampier",
+      "state": "WA",
+      "lat": -20.65,
+      "lon": 116.687
+    },
+    {
+      "id": "IDR16",
+      "name": "Port Hedland",
+      "state": "WA",
+      "lat": -20.3719,
+      "lon": 118.6317
+    },
+    {
+      "id": "IDR17",
+      "name": "Broome",
+      "state": "WA",
+      "lat": -17.9483,
+      "lon": 122.2353
+    },
+    {
+      "id": "IDR19",
+      "name": "Cairns",
+      "state": "QLD",
+      "lat": -16.817,
+      "lon": 145.683
+    },
+    {
+      "id": "IDR22",
+      "name": "Mackay",
+      "state": "QLD",
+      "lat": -21.117,
+      "lon": 149.217
+    },
+    {
+      "id": "IDR23",
+      "name": "Gladstone",
+      "state": "QLD",
+      "lat": -23.855,
+      "lon": 151.2626
+    },
+    {
+      "id": "IDR24",
+      "name": "Bowen",
+      "state": "QLD",
+      "lat": -19.886,
+      "lon": 148.075
+    },
+    {
+      "id": "IDR25",
+      "name": "Alice Springs",
+      "state": "NT",
+      "lat": -23.796,
+      "lon": 133.888
+    },
+    {
+      "id": "IDR27",
+      "name": "Woomera",
+      "state": "SA",
+      "lat": -31.157,
+      "lon": 136.803
+    },
+    {
+      "id": "IDR28",
+      "name": "Grafton",
+      "state": "NSW",
+      "lat": -29.622,
+      "lon": 152.951
+    },
+    {
+      "id": "IDR29",
+      "name": "Learmonth",
+      "state": "WA",
+      "lat": -22.103,
+      "lon": 113.999
+    },
+    {
+      "id": "IDR31",
+      "name": "Albany",
+      "state": "WA",
+      "lat": -34.9418,
+      "lon": 117.8163
+    },
+    {
+      "id": "IDR32",
+      "name": "Esperance",
+      "state": "WA",
+      "lat": -33.8303,
+      "lon": 121.8917
+    },
+    {
+      "id": "IDR33",
+      "name": "Ceduna",
+      "state": "SA",
+      "lat": -32.1298,
+      "lon": 133.6963
+    },
+    {
+      "id": "IDR36",
+      "name": "Mornington Island (Gulf of Carpentaria)",
+      "state": "QLD",
+      "lat": -16.666,
+      "lon": 139.167
+    },
+    {
+      "id": "IDR38",
+      "name": "Newdegate",
+      "state": "WA",
+      "lat": -33.097,
+      "lon": 119.009
+    },
+    {
+      "id": "IDR39",
+      "name": "Halls Creek",
+      "state": "WA",
+      "lat": -18.231,
+      "lon": 127.663
+    },
+    {
+      "id": "IDR40",
+      "name": "Canberra (Captains Flat)",
+      "state": "NSW",
+      "lat": -35.6614,
+      "lon": 149.5122
+    },
+    {
+      "id": "IDR41",
+      "name": "Willis Island",
+      "state": "QLD",
+      "lat": -16.2874,
+      "lon": 149.9646
+    },
+    {
+      "id": "IDR42",
+      "name": "Katherine (Tindal)",
+      "state": "NT",
+      "lat": -14.513,
+      "lon": 132.446
+    },
+    {
+      "id": "IDR44",
+      "name": "Giles",
+      "state": "WA",
+      "lat": -25.03,
+      "lon": 128.3
+    },
+    {
+      "id": "IDR46",
+      "name": "Adelaide (Sellicks Hill)",
+      "state": "SA",
+      "lat": -35.33,
+      "lon": 138.5
+    },
+    {
+      "id": "IDR48",
+      "name": "Kalgoorlie",
+      "state": "WA",
+      "lat": -30.7834,
+      "lon": 121.4549
+    },
+    {
+      "id": "IDR49",
+      "name": "Yarrawonga",
+      "state": "VIC",
+      "lat": -36.0297,
+      "lon": 146.0228
+    },
+    {
+      "id": "IDR50",
+      "name": "Brisbane (Marburg)",
+      "state": "QLD",
+      "lat": -27.608,
+      "lon": 152.539
+    },
+    {
+      "id": "IDR52",
+      "name": "NW Tasmania (West Takone)",
+      "state": "TAS",
+      "lat": -41.181,
+      "lon": 145.579
+    },
+    {
+      "id": "IDR53",
+      "name": "Moree",
+      "state": "NSW",
+      "lat": -29.5,
+      "lon": 149.85
+    },
+    {
+      "id": "IDR55",
+      "name": "Wagga Wagga",
+      "state": "NSW",
+      "lat": -35.167,
+      "lon": 147.467
+    },
+    {
+      "id": "IDR56",
+      "name": "Longreach",
+      "state": "QLD",
+      "lat": -23.43,
+      "lon": 144.29
+    },
+    {
+      "id": "IDR58",
+      "name": "South Doodlakine",
+      "state": "WA",
+      "lat": -31.777,
+      "lon": 117.953
+    },
+    {
+      "id": "IDR62",
+      "name": "Norfolk Island",
+      "state": "NSW",
+      "lat": -29.033,
+      "lon": 167.933
+    },
+    {
+      "id": "IDR63",
+      "name": "Darwin (Berrimah)",
+      "state": "NT",
+      "lat": -12.457,
+      "lon": 130.925
+    },
+    {
+      "id": "IDR64",
+      "name": "Adelaide (Buckland Park)",
+      "state": "SA",
+      "lat": -34.6169,
+      "lon": 138.4689
+    },
+    {
+      "id": "IDR66",
+      "name": "Brisbane (Mt Stapylton)",
+      "state": "QLD",
+      "lat": -27.7178,
+      "lon": 153.24
+    },
+    {
+      "id": "IDR67",
+      "name": "Warrego",
+      "state": "QLD",
+      "lat": -26.44,
+      "lon": 147.3492
+    },
+    {
+      "id": "IDR68",
+      "name": "Bairnsdale",
+      "state": "VIC",
+      "lat": -37.8876,
+      "lon": 147.5755
+    },
+    {
+      "id": "IDR69",
+      "name": "Namoi (Blackjack Mountain)",
+      "state": "NSW",
+      "lat": -31.0236,
+      "lon": 150.1917
+    },
+    {
+      "id": "IDR70",
+      "name": "Perth (Serpentine)",
+      "state": "WA",
+      "lat": -32.3917,
+      "lon": 115.867
+    },
+    {
+      "id": "IDR71",
+      "name": "Sydney (Terrey Hills)",
+      "state": "NSW",
+      "lat": -33.7008,
+      "lon": 151.2094
+    },
+    {
+      "id": "IDR72",
+      "name": "Emerald",
+      "state": "QLD",
+      "lat": -23.5498,
+      "lon": 148.2392
+    },
+    {
+      "id": "IDR74",
+      "name": "Greenvale",
+      "state": "QLD",
+      "lat": -18.9976,
+      "lon": 144.9959
+    },
+    {
+      "id": "IDR75",
+      "name": "Mount Isa",
+      "state": "QLD",
+      "lat": -20.7112,
+      "lon": 139.5552
+    },
+    {
+      "id": "IDR76",
+      "name": "Hobart (Mt Koonya)",
+      "state": "TAS",
+      "lat": -43.1122,
+      "lon": 147.8057
+    },
+    {
+      "id": "IDR77",
+      "name": "Warruwi",
+      "state": "NT",
+      "lat": -11.6485,
+      "lon": 133.38
+    },
+    {
+      "id": "IDR78",
+      "name": "Weipa",
+      "state": "QLD",
+      "lat": -12.666,
+      "lon": 141.925
+    },
+    {
+      "id": "IDR79",
+      "name": "Watheroo",
+      "state": "WA",
+      "lat": -30.36,
+      "lon": 116.2896
+    },
+    {
+      "id": "IDR93",
+      "name": "Brewarrina",
+      "state": "NSW",
+      "lat": -29.9708,
+      "lon": 146.8136
+    },
+    {
+      "id": "IDR94",
+      "name": "Hillston",
+      "state": "NSW",
+      "lat": -33.28788,
+      "lon": 145.60489
+    },
+    {
+      "id": "IDR95",
+      "name": "Rainbow (Wimmera)",
+      "state": "VIC",
+      "lat": -35.9975,
+      "lon": 142.013
+    },
+    {
+      "id": "IDR96",
+      "name": "Yeoval",
+      "state": "NSW",
+      "lat": -32.7444,
+      "lon": 148.7081
+    },
+    {
+      "id": "IDR97",
+      "name": "Mildura",
+      "state": "VIC",
+      "lat": -34.2871,
+      "lon": 141.5982
+    },
+    {
+      "id": "IDR98",
+      "name": "Taroom",
+      "state": "QLD",
+      "lat": -25.6962,
+      "lon": 149.8982
+    }
+  ]
+}

@@ -603,7 +603,9 @@ Item {
     }
     function coverageInReach(s) {
         if (s && s.coverage && s.coverage.kind !== "circle") return true;
-        var distance = distanceKm(latitude(overlayY), longitude(overlayX), s.lat, s.lon);
+        // A radar-centred mosaic carries its circle's centre in its coverage.
+        var c = s.coverage ? s.coverage : s;
+        var distance = distanceKm(latitude(overlayY), longitude(overlayX), c.lat, c.lon);
         // Mercator ground scale never exceeds its equatorial scale. This
         // conservative padded-view radius cannot cull an arc crossing the view.
         var radius = Math.hypot(overlayHalfX, overlayHalfY)*2*Math.PI*6371;
